@@ -30,8 +30,12 @@ import com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.JobView;
 import com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.JobViews;
 import hudson.Extension;
 import hudson.model.Descriptor.FormException;
+import hudson.model.ItemGroup;
 import hudson.model.Job;
 import hudson.model.ListView;
+import hudson.model.TopLevelItem;
+import hudson.model.ViewGroup;
+import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
@@ -43,6 +47,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import static hudson.Util.filter;
 
@@ -64,6 +70,16 @@ public class BuildMonitorView extends ListView {
         super(name);
 
         this.title = title;
+    }
+
+    @Override
+    public ViewGroup getOwner() {
+        return Jenkins.getInstance();
+    }
+
+    @Override
+    public ItemGroup<? extends TopLevelItem> getOwnerItemGroup() {
+        return Jenkins.getInstance();
     }
 
     @SuppressWarnings("unused") // used in .jelly
