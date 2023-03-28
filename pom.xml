@@ -5,7 +5,7 @@
 
     <properties>
         <revision>1.14</revision>
-        <changelist>sr-custom-build</changelist>
+        <changelist>custom-plugin</changelist>
         <jenkins.version>2.361.4</jenkins.version>
         <gitHubRepo>jenkinsci/build-monitor-plugin</gitHubRepo>
     </properties>
