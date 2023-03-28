@@ -54,7 +54,7 @@
     <repositories>
         <repository>
             <id>custom-jenkins-plugins</id>
-            <url>https://nexus.srinternal.net/nexus/repository/jenkins-plugins</url>
+            <url>https://nexus.srinternal.net/nexus/repository/public</url>
 
         </repository>
     </repositories>
@@ -62,7 +62,7 @@
     <pluginRepositories>
         <pluginRepository>
             <id>custom-jenkins-plugins</id>
-            <url>https://nexus.srinternal.net/nexus/repository/jenkins-plugins</url>
+            <url>https://nexus.srinternal.net/nexus/repository/public</url>
 
         </pluginRepository>
     </pluginRepositories>
