@@ -44,13 +44,6 @@
         </pluginRepository>
     </pluginRepositories>
 
-    <distributionManagement>
-        <repository>
-            <id>custom-jenkins-plugins</id>
-            <url>https://nexus.srinternal.net/nexus/repository/jenkins-plugins</url>
-        </repository>
-    </distributionManagement>
-
     <modules>
         <module>build-monitor-plugin</module>
         <module>build-monitor-acceptance</module>
