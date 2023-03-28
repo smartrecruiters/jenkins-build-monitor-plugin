@@ -33,21 +33,21 @@
 
     <repositories>
         <repository>
-            <id>repo.jenkins-ci.org</id>
-            <url>https://repo.jenkins-ci.org/public/</url>
+            <id>custom-jenkins-plugins</id>
+            <url>https://nexus.srinternal.net/nexus/repository/jenkins-plugins</url>
         </repository>
     </repositories>
     <pluginRepositories>
         <pluginRepository>
-            <id>repo.jenkins-ci.org</id>
-            <url>https://repo.jenkins-ci.org/public/</url>
+            <id>custom-jenkins-plugins</id>
+            <url>https://nexus.srinternal.net/nexus/repository/jenkins-plugins</url>
         </pluginRepository>
     </pluginRepositories>
 
     <distributionManagement>
         <repository>
-            <id>repo.jenkins-ci.org</id>
-            <url>https://repo.jenkins-ci.org/releases</url>
+            <id>custom-jenkins-plugins</id>
+            <url>https://nexus.srinternal.net/nexus/repository/jenkins-plugins</url>
         </repository>
     </distributionManagement>
 
