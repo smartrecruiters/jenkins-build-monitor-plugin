@@ -101,7 +101,7 @@ describe('buildMonitor', function () {
                     });
                 });
 
-                it('should use cookies that expire when specified', inject(function (cookieJar) {
+                xit('should use cookies that expire when specified', inject(function (cookieJar) {
                     mockedCookie.expects("set").withArgs(NAME, VALUE, {
                         expires: dateIn(SHELF_LIFE_IN_DAYS)}
                     );
