@@ -1,17 +1,16 @@
 package net.serenitybdd.integration.jenkins.process;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
 import org.jdeferred.Promise;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.validation.constraints.NotNull;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.*;
-import java.util.regex.Matcher;
-
-import static java.lang.String.format;
-import static java.util.Arrays.asList;
 
 public class JenkinsProcess {
     private static final Logger Log = LoggerFactory.getLogger(JenkinsProcess.class);
@@ -24,32 +23,44 @@ public class JenkinsProcess {
     private final Thread      shutdownHook = new Thread() {
         @Override
         public void run() {
-            jenkinsProcess.destroy();
+            if (jenkinsProcess.isAlive()) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+                if (jenkinsProcess.isAlive()) {
+                    jenkinsProcess.destroyForcibly();
+                }
+            }
         }
     };
 
     private JenkinsLogWatcher jenkinsLogWatcher;
     private Thread jenkinsLogWatcherThread;
 
-    public JenkinsProcess(@NotNull Path java, @NotNull Path jenkinsWar, @NotNull int port, @NotNull Path jenkinsHome) {
+    @SuppressFBWarnings(value = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", justification = "FindBugs does not like the JAVA_HOME resolve")
+    public JenkinsProcess(@NonNull Path java, @NonNull Path jenkinsWar, @NonNull int port, @NonNull Path jenkinsHome) {
         Log.debug("jenkins.war:  {}", jenkinsWar.toAbsolutePath());
         Log.debug("JENKINS_HOME: {}", jenkinsHome.toAbsolutePath());
 
         this.port = port;
 
-        Map<String, String> env = new HashMap<>();
-        env.put("JENKINS_HOME", jenkinsHome.toAbsolutePath().toString());
-        env.put("JAVA_HOME",    java.getParent().getParent().toAbsolutePath().toString());
+        Map<String, String> env = Map.of(
+                "JENKINS_HOME", jenkinsHome.toAbsolutePath().toString(),
+                "JAVA_HOME", java.getParent().getParent().toAbsolutePath().toString());
 
         process = process(java,
                 "-Duser.language=en",
                 "-Dhudson.Main.development=true",
+                "-Dorg.slf4j.simpleLogger.defaultLogLevel=debug",
+                "-Djava.util.logging=DEBUG",
+				"-Dhudson.DNSMultiCast.disabled=true",
                 "-jar", jenkinsWar.toString(),
-                "--ajp13Port=-1",
                 "--httpPort=" + port
         ).directory(jenkinsHome.toFile());
 
-        process.environment().putAll(Collections.unmodifiableMap(env));
+        process.environment().putAll(env);
         process.redirectErrorStream(true);
     }
 
@@ -69,13 +80,13 @@ public class JenkinsProcess {
             jenkinsStarted.waitSafely(Startup_Timeout);
 
             if (! jenkinsStarted.isResolved()) {
-                throw new RuntimeException(format("Jenkins failed to start within %s seconds, aborting the test.", Startup_Timeout));
+                throw new RuntimeException(String.format("Jenkins failed to start within %s seconds, aborting the test.", Startup_Timeout));
             }
 
             Log.info("Jenkins is now available at http://localhost:{}", port);
         } catch (InterruptedException e) {
             throw portConflictDetected.isResolved()
-                    ? new RuntimeException(format("Couldn't start Jenkins on port '%s', the port is already in use", port), e)
+                    ? new RuntimeException(String.format("Couldn't start Jenkins on port '%s', the port is already in use", port), e)
                     : new RuntimeException("Couldn't start Jenkins", e);
         }
     }
@@ -88,7 +99,7 @@ public class JenkinsProcess {
         try {
             jenkinsLogWatcher.watchFor(logLine).waitSafely(Startup_Timeout);
         } catch (InterruptedException e) {
-            throw new RuntimeException(format("Did not see '%s' in the Jenkins log within %s ms", logLine, Startup_Timeout), e);
+            throw new RuntimeException(String.format("Did not see '%s' in the Jenkins log within %s ms", logLine, Startup_Timeout), e);
         }
     }
 
@@ -102,7 +113,7 @@ public class JenkinsProcess {
 
     private ProcessBuilder process(Path executable, String... arguments) {
         List<String> args = new ArrayList<>(windowsOrUnix(executable));
-        args.addAll(asList(arguments));
+        args.addAll(List.of(arguments));
 
         return new ProcessBuilder(args);
     }
@@ -120,7 +131,11 @@ public class JenkinsProcess {
 
     private List<String> windowsOrUnix(Path command) {
         return OS.contains("win")
-                ? asList("cmd.exe", "/C", command.toString())
-                : asList(command.toString());
+                ? List.of("cmd.exe", "/C", command.toString())
+                : List.of(command.toString());
+    }
+
+    public JenkinsLogWatcher getJenkinsLogWatcher() {
+        return jenkinsLogWatcher;
     }
 }

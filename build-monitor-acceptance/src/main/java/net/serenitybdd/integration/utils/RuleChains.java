@@ -1,17 +1,12 @@
 package net.serenitybdd.integration.utils;
 
+import java.util.List;
 import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
 
-import java.util.Arrays;
-import java.util.List;
-
-import static net.serenitybdd.integration.utils.ListFunctions.head;
-import static net.serenitybdd.integration.utils.ListFunctions.tail;
-
 public class RuleChains {
     public static RuleChain from(TestRule... rules) {
-        return from(Arrays.asList(rules));
+        return from(List.of(rules));
     }
 
     private static RuleChain from(List<TestRule> testRules) {
@@ -26,6 +21,6 @@ public class RuleChains {
     public static <R extends TestRule> RuleChain chained(RuleChain acc, List<R> customRules) {
         return customRules.isEmpty()
                 ? acc
-                : chained(acc.around(head(customRules)), tail(customRules));
+                : chained(acc.around(ListFunctions.head(customRules)), ListFunctions.tail(customRules));
     }
 }

@@ -1,14 +1,17 @@
 package com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.features;
 
-import com.google.common.base.Predicate;
 import com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.JobView;
-import com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.features.headline.*;
-
+import com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.features.headline.CandidateHeadline;
+import com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.features.headline.Headline;
+import com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.features.headline.HeadlineConfig;
+import com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.features.headline.HeadlineOfAborted;
+import com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.features.headline.HeadlineOfExecuting;
+import com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.features.headline.HeadlineOfFailing;
+import com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.features.headline.HeadlineOfFixed;
+import com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.features.headline.NoHeadline;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-
-import static com.google.common.collect.Iterables.filter;
-import static com.google.common.collect.Iterables.getFirst;
-import static com.google.common.collect.Lists.newArrayList;
 
 /**
  * @author Jan Molak
@@ -35,18 +38,17 @@ public class HasHeadline implements Feature<Headline> {
     }
 
     private CandidateHeadline headlineOf(final JobView job) {
-        List<CandidateHeadline> availableHeadlines = newArrayList(
+        List<CandidateHeadline> availableHeadlines = new ArrayList<>();
+        Collections.addAll(availableHeadlines,
                 new HeadlineOfExecuting(job, config),
                 new HeadlineOfAborted(job, config),
                 new HeadlineOfFixed(job, config),
                 new HeadlineOfFailing(job, config)
         );
 
-        return getFirst(filter(availableHeadlines, new Predicate<CandidateHeadline>() {
-            @Override
-            public boolean apply(CandidateHeadline candidateHeadline) {
-                return candidateHeadline.isApplicableTo(job);
-            }
-        }), new NoHeadline());
+        return availableHeadlines.stream()
+                .filter(candidateHeadline -> candidateHeadline.isApplicableTo(job))
+                .findFirst()
+                .orElse(new NoHeadline());
     }
 }

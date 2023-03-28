@@ -1,27 +1,28 @@
 package com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel;
 
 import hudson.model.Result;
-
-import java.util.HashMap;
 import java.util.Map;
-
-import static hudson.model.Result.*;
 
 /**
  * @author Jan Molak
  */
 public class CssStatus {
 
-    private static final Map<Result, String> statuses = new HashMap<Result, String>() {{
-        put(SUCCESS,   "successful");
-        put(UNSTABLE,  "unstable");
-        put(FAILURE,   "failing");
-        put(NOT_BUILT, "unknown");
-        put(ABORTED,   "aborted");
-    }};
+    private static final Map<Result, String> statuses = Map.of(
+            Result.SUCCESS, "successful",
+            Result.UNSTABLE, "unstable",
+            Result.FAILURE, "failing",
+            Result.NOT_BUILT, "unknown",
+            Result.ABORTED, "aborted");
 
     public static String of(final JobView job) {
-        String status = statusOf(job.lastResult());
+        Result result = job.lastResult();
+        String status;
+        if (result == null) {
+            status = "unknown";
+        } else {
+            status = statuses.getOrDefault(result, "unknown");
+        }
 
         if (job.isDisabled()) {
             status += " disabled";
@@ -32,9 +33,5 @@ public class CssStatus {
         }
 
         return status;
-    }
-
-    private static String statusOf(Result result) {
-        return statuses.containsKey(result) ? statuses.get(result) : "unknown";
     }
 }

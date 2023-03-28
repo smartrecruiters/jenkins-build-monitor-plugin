@@ -1,36 +1,56 @@
 package com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.features;
 
+import static com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.syntacticsugar.Sugar.a;
+import static com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.syntacticsugar.Sugar.build;
+import static com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.syntacticsugar.Sugar.job;
+import static com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.syntacticsugar.Sugar.jobView;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+
 import com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.JobView;
 import com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.features.headline.HeadlineConfig;
 import hudson.model.User;
+import jenkins.model.Jenkins;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockedStatic;
 
-import static com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.syntacticsugar.Sugar.*;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ User.class })
 public class HasHeadlineShowingAbortedBuildDetails {
 
     private JobView view;
 
-    @Test
-    public void should_tell_who_aborted_the_build() throws Exception {
+    private MockedStatic<Jenkins> mockedJenkins;
+    private Jenkins jenkins;
 
-        view = a(jobView().which(hasHeadlineThatShowsCommitters()).of(
-                a(job().whereTheLast(build().wasAbortedBy("Abe")))));
+    @Before
+    public void setup() {
+        mockedJenkins = mockStatic(Jenkins.class);
+        jenkins = mock(Jenkins.class);
+        mockedJenkins.when(Jenkins::get).thenReturn(jenkins);
+    }
 
-        assertThat(headlineOf(view), is("Execution aborted by Abe"));
+    @After
+    public void tearDown() {
+        mockedJenkins.close();
     }
 
     @Test
-    public void should_tell_if_a_build_was_aborted() throws Exception {
+    public void should_tell_who_aborted_the_build() {
+        try (MockedStatic<User> mockedUser = mockStatic(User.class)) {
+            view = a(jobView().which(hasHeadlineThatShowsCommitters()).of(
+                    a(job().whereTheLast(build().wasAbortedBy("Abe", mockedUser)))));
+
+            assertThat(headlineOf(view), is("Execution aborted by Abe"));
+        }
+    }
+
+    @Test
+    public void should_tell_if_a_build_was_aborted() {
         view = a(jobView().which(hasHeadlineThatDoesNotShowCommitters()).of(
-                a(job().whereTheLast(build().wasAbortedBy("Abe")))));
+                a(job().whereTheLast(build().wasAbortedBy("Abe", null)))));
 
         assertThat(headlineOf(view), is("Execution aborted"));
     }

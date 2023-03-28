@@ -1,64 +1,104 @@
 package features;
 
+import static net.serenitybdd.screenplay.GivenWhenThen.givenThat;
+import static net.serenitybdd.screenplay.GivenWhenThen.seeThat;
+import static net.serenitybdd.screenplay.GivenWhenThen.then;
+import static net.serenitybdd.screenplay.GivenWhenThen.when;
+
 import com.smartcodeltd.jenkinsci.plugins.build_monitor.questions.ProjectWidget;
-import com.smartcodeltd.jenkinsci.plugins.build_monitor.tasks.HaveABuildMonitorViewCreated;
+import com.smartcodeltd.jenkinsci.plugins.build_monitor.tasks.CreateABuildMonitorView;
+import com.smartcodeltd.jenkinsci.plugins.build_monitor.tasks.HideBadges;
 import com.smartcodeltd.jenkinsci.plugins.build_monitor.tasks.ModifyControlPanelOptions;
 import com.smartcodeltd.jenkinsci.plugins.build_monitor.tasks.ShowBadges;
-import environment.JenkinsSandbox;
-import net.serenitybdd.integration.jenkins.JenkinsInstance;
-import net.serenitybdd.integration.jenkins.environment.rules.InstallPlugins;
-import net.serenitybdd.junit.runners.SerenityRunner;
+import com.smartcodeltd.jenkinsci.plugins.build_monitor.tasks.configuration.ConfigureViewSettings;
+import com.smartcodeltd.jenkinsci.plugins.build_monitor.tasks.configuration.DisplayAllProjects;
+import com.smartcodeltd.jenkinsci.plugins.build_monitor.tasks.configuration.DisplayBadges;
+import com.smartcodeltd.jenkinsci.plugins.build_monitor.tasks.configuration.DisplayBadgesFrom;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.abilities.BrowseTheWeb;
-import net.serenitybdd.screenplay.jenkins.HaveAProjectCreated;
+import net.serenitybdd.screenplay.jenkins.HaveAPipelineProjectCreated;
 import net.serenitybdd.screenplay.jenkins.tasks.ScheduleABuild;
-import net.serenitybdd.screenplay.jenkins.tasks.configuration.build_steps.AddAGroovyPostbuildScript;
-import net.serenitybdd.screenplay.jenkins.tasks.configuration.build_steps.ExecuteAShellScript;
 import net.serenitybdd.screenplay.jenkins.tasks.configuration.build_steps.GroovyScriptThat;
+import net.serenitybdd.screenplay.jenkins.tasks.configuration.build_steps.SetPipelineDefinition;
+import net.serenitybdd.screenplay.matchers.WebElementStateMatchers;
 import net.serenitybdd.screenplayx.actions.Navigate;
-import net.thucydides.core.annotations.Managed;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.openqa.selenium.WebDriver;
 
-import static net.serenitybdd.screenplay.GivenWhenThen.*;
-import static net.serenitybdd.screenplay.jenkins.tasks.configuration.build_steps.ShellScriptThat.Finishes_With_Success;
-import static net.serenitybdd.screenplay.matchers.WebElementStateMatchers.isCurrentlyVisible;
-
-@RunWith(SerenityRunner.class)
-public class ShouldDisplayBadges {
+public class ShouldDisplayBadges extends BuildMonitorAcceptanceTest {
 
     Actor paul = Actor.named("Paul");
 
-    @Managed public WebDriver hisBrowser;
-
-    @Rule public JenkinsInstance jenkins = JenkinsSandbox.configure().afterStart(
-            InstallPlugins.fromUpdateCenter("buildtriggerbadge", "groovy-postbuild")
-    ).create();
-
     @Before
     public void actorCanBrowseTheWeb() {
-        paul.can(BrowseTheWeb.with(hisBrowser));
+        paul.can(BrowseTheWeb.with(browser));
     }
 
     @Test
-    public void displaying_build_badges() throws Exception {
+    public void user_displaying_build_badges() {
         givenThat(paul).wasAbleTo(
                 Navigate.to(jenkins.url()),
-                HaveAProjectCreated.called("My App").andConfiguredTo(
-                        ExecuteAShellScript.that(Finishes_With_Success),
-                        AddAGroovyPostbuildScript.that(GroovyScriptThat.Adds_A_Badge)
+                HaveAPipelineProjectCreated.called("My App").andConfiguredTo(
+                        SetPipelineDefinition.asFollows(GroovyScriptThat.Adds_A_Badge.code())
                 ),
+
                 ScheduleABuild.of("My App"),
-                HaveABuildMonitorViewCreated.showingAllTheProjects()
+                CreateABuildMonitorView.called("Build Monitor").andConfigureItTo(
+                        DisplayAllProjects.usingARegularExpression(),
+                        DisplayBadges.asAUserSetting(),
+                        DisplayBadgesFrom.theLastBuild()
+                )
         );
 
         when(paul).attemptsTo(ModifyControlPanelOptions.to(ShowBadges.onTheDashboard()));
 
         then(paul).should(seeThat(ProjectWidget.of("My App").badges(),
-        		isCurrentlyVisible()
+                WebElementStateMatchers.isCurrentlyVisible()
+        ));
+    }
+
+    @Test
+    public void always_displaying_build_badges() {
+        givenThat(paul).wasAbleTo(
+                Navigate.to(jenkins.url()),
+                HaveAPipelineProjectCreated.called("My App").andConfiguredTo(
+                        SetPipelineDefinition.asFollows(GroovyScriptThat.Adds_A_Badge.code())
+                ),
+                ScheduleABuild.of("My App"),
+                CreateABuildMonitorView.called("Build Monitor").andConfigureItTo(
+                        DisplayAllProjects.usingARegularExpression(),
+                        ConfigureViewSettings.toggleShowBadges(),
+                        DisplayBadges.always(),
+                        DisplayBadgesFrom.theLastBuild()
+                )
+        );
+
+        when(paul).attemptsTo(ModifyControlPanelOptions.to(HideBadges.onTheDashboard()));
+
+        then(paul).should(seeThat(ProjectWidget.of("My App").badges(),
+                WebElementStateMatchers.isCurrentlyVisible()
+        ));
+    }
+
+    @Test
+    public void never_displaying_build_badges() {
+        givenThat(paul).wasAbleTo(
+                Navigate.to(jenkins.url()),
+                HaveAPipelineProjectCreated.called("My App").andConfiguredTo(
+                        SetPipelineDefinition.asFollows(GroovyScriptThat.Adds_A_Badge.code())
+                ),
+                ScheduleABuild.of("My App"),
+                CreateABuildMonitorView.called("Build Monitor").andConfigureItTo(
+                        DisplayAllProjects.usingARegularExpression(),
+                        DisplayBadges.never(),
+                        DisplayBadgesFrom.theLastBuild()
+                )
+        );
+
+        when(paul).attemptsTo(ModifyControlPanelOptions.to(ShowBadges.onTheDashboard()));
+
+        then(paul).should(seeThat(ProjectWidget.of("My App").badges(),
+                WebElementStateMatchers.isNotCurrentlyVisible()
         ));
     }
 }

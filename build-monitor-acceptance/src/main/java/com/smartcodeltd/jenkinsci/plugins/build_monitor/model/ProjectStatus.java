@@ -1,17 +1,13 @@
 package com.smartcodeltd.jenkinsci.plugins.build_monitor.model;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
-
-import javax.validation.constraints.NotNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
-
-import static java.lang.String.format;
-import static org.hibernate.validator.internal.util.CollectionHelper.newArrayList;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public enum ProjectStatus {
     Successful("successful"),
@@ -33,16 +29,18 @@ public enum ProjectStatus {
 
     public static List<ProjectStatus> fromMultiple(String cssClasses) {
         // todo: Java 8?
-        List<ProjectStatus> statuses = newArrayList();
+        List<ProjectStatus> statuses = new ArrayList<>();
 
-        for(String statusClass : Sets.intersection(projectStatusClasses(), setOf(split(cssClasses)))) {
-            statuses.add(ProjectStatus.from(statusClass));
+        for (String statusClass : projectStatusClasses()) {
+            if (setOf(split(cssClasses)).contains(statusClass)) {
+                statuses.add(ProjectStatus.from(statusClass));
+            }
         }
 
         return statuses;
     }
 
-    public static ProjectStatus from(@NotNull String cssClass) {
+    public static ProjectStatus from(@NonNull String cssClass) {
 
         for (ProjectStatus status : ProjectStatus.values()) {
             if (cssClass.equalsIgnoreCase(status.value)) {
@@ -50,7 +48,7 @@ public enum ProjectStatus {
             }
         }
 
-        throw new IllegalArgumentException(format("'%s' is not a recognised value of the ProjectStatus enum", cssClass));
+        throw new IllegalArgumentException(String.format("'%s' is not a recognised value of the ProjectStatus enum", cssClass));
     }
 
     // todo: Java 8?
@@ -60,22 +58,17 @@ public enum ProjectStatus {
     }
 
     private static List<String> split(String spaceSeparatedItems) {
-        return Splitter.on(" ").splitToList(spaceSeparatedItems);
+        return Stream.of(spaceSeparatedItems.split("\\s+")).collect(Collectors.toList());
     }
 
     private static <T> Set<T> setOf(List<T> items) {
-        return ImmutableSet.copyOf(items);
+        return Set.copyOf(items);
     }
 
     private static <T> List<String> stringRepresentationsOf(Collection<T> items) {
-        // todo: Java 8?
-        List<String> values = newArrayList();
-
-        for (T item : items) {
-            values.add(item.toString());
-        }
-
-        return values;
+        return items.stream()
+                .map(Object::toString)
+                .collect(Collectors.toList());
     }
 
 

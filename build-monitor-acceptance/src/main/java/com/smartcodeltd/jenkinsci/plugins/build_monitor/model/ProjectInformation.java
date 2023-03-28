@@ -1,9 +1,7 @@
 package com.smartcodeltd.jenkinsci.plugins.build_monitor.model;
 
-import com.google.common.base.Objects;
-import com.google.common.collect.ImmutableList;
-
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ProjectInformation {
     private final String name;
@@ -19,14 +17,11 @@ public class ProjectInformation {
     }
 
     public List<ProjectStatus> status() {
-        return ImmutableList.copyOf(status);
+        return List.copyOf(status);
     }
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
-                .add("name", name)
-                .add("status", status)
-                .toString();
+        return String.format("ProjectInformation{name=%s, status={%s}}", name, status.stream().map(Object::toString).collect(Collectors.joining(", ")));
     }
 }

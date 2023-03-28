@@ -1,15 +1,12 @@
 package com.smartcodeltd.jenkinsci.plugins.buildmonitor.pipeline;
 
-import org.junit.Test;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.junit.Assert.assertThat;
+
+import java.util.Collection;
+import java.util.List;
+import org.junit.Test;
 
 public class BreadthFirstNodeTraversalTest {
     @Test
@@ -41,7 +38,7 @@ public class BreadthFirstNodeTraversalTest {
 
     private List<String> findStages(TestNode head) {
         BreadthFirstNodeTraversal<TestNode> traversal = new BreadthFirstTestNodeTraversal();
-        traversal.start(Collections.singletonList(head));
+        traversal.start(List.of(head));
         return traversal.getStages();
     }
 
@@ -57,7 +54,7 @@ public class BreadthFirstNodeTraversalTest {
         TestNode(String displayName, Type type, TestNode[] parents) {
             this.displayName = displayName;
             this.type = type;
-            this.parents = Arrays.asList(parents);
+            this.parents = List.of(parents);
         }
 
         String getDisplayName() {

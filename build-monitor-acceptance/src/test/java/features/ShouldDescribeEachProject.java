@@ -1,12 +1,14 @@
 package features;
 
+import static net.serenitybdd.screenplay.GivenWhenThen.givenThat;
+import static net.serenitybdd.screenplay.GivenWhenThen.seeThat;
+import static net.serenitybdd.screenplay.GivenWhenThen.then;
+import static net.serenitybdd.screenplay.GivenWhenThen.when;
+import static org.hamcrest.Matchers.is;
+
 import com.smartcodeltd.jenkinsci.plugins.build_monitor.questions.ProjectWidget;
 import com.smartcodeltd.jenkinsci.plugins.build_monitor.tasks.HaveABuildMonitorViewCreated;
-import environment.JenkinsSandbox;
 import hudson.plugins.descriptionsetter.tasks.SetBuildDescription;
-import net.serenitybdd.integration.jenkins.JenkinsInstance;
-import net.serenitybdd.integration.jenkins.environment.rules.InstallPlugins;
-import net.serenitybdd.junit.runners.SerenityRunner;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.abilities.BrowseTheWeb;
 import net.serenitybdd.screenplay.jenkins.HaveAProjectCreated;
@@ -14,42 +16,25 @@ import net.serenitybdd.screenplay.jenkins.tasks.ScheduleABuild;
 import net.serenitybdd.screenplay.jenkins.tasks.configuration.build_steps.ExecuteAShellScript;
 import net.serenitybdd.screenplay.jenkins.tasks.configuration.build_steps.ShellScript;
 import net.serenitybdd.screenplayx.actions.Navigate;
-import net.thucydides.core.annotations.Managed;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.openqa.selenium.WebDriver;
 
-import static net.serenitybdd.screenplay.GivenWhenThen.*;
-import static org.hamcrest.Matchers.is;
+public class ShouldDescribeEachProject extends BuildMonitorAcceptanceTest {
 
-@RunWith(SerenityRunner.class)
-public class ShouldDescribeEachProject {
-
-
-    Actor dave = Actor.named("Dave");
-
-    @Managed
-    public WebDriver hisBrowser;
-
-    @Rule
-    public JenkinsInstance jenkins = JenkinsSandbox.configure().afterStart(
-            InstallPlugins.fromUpdateCenter("description-setter")
-    ).create();
+    private Actor dave = Actor.named("Dave");
 
     @Before
     public void actorCanBrowseTheWeb() {
-        dave.can(BrowseTheWeb.with(hisBrowser));
+        dave.can(BrowseTheWeb.with(browser));
     }
 
     @Test
-    public void displaying_a_custom_build_description() throws Exception {
+    public void displaying_a_custom_build_description() {
         givenThat(dave).wasAbleTo(
                 Navigate.to(jenkins.url()),
                 HaveAProjectCreated.called("Example Github Project").andConfiguredTo(
                         ExecuteAShellScript.that(outputsGithubProjectLog()),
-                        SetBuildDescription.to("Revision: \\1").basedOnLogLineMatching("Checking out Revision ([^\\s]{6})")
+                        SetBuildDescription.to("Revision: \\1").basedOnLogLineMatching("Checking out Revision ([\\w]{6})")
                 ),
                 ScheduleABuild.of("Example Github Project")
         );

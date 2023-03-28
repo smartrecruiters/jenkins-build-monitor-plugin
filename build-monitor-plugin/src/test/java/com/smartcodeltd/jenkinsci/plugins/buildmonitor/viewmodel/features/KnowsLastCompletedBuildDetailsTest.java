@@ -1,16 +1,41 @@
 package com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.features;
 
-import com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.JobView;
-import org.junit.Test;
-
-import static com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.syntacticsugar.Sugar.*;
+import static com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.syntacticsugar.Sugar.a;
+import static com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.syntacticsugar.Sugar.build;
+import static com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.syntacticsugar.Sugar.job;
+import static com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.syntacticsugar.Sugar.jobView;
+import static com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.syntacticsugar.Sugar.locatedAt;
 import static com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.syntacticsugar.TimeMachine.currentTime;
-import static hudson.model.Result.SUCCESS;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+
+import com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.JobView;
+import hudson.model.Result;
+import jenkins.model.Jenkins;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.MockedStatic;
 
 public class KnowsLastCompletedBuildDetailsTest {
     private JobView view;
+
+    private MockedStatic<Jenkins> mockedJenkins;
+    private Jenkins jenkins;
+
+    @Before
+    public void setup() {
+        mockedJenkins = mockStatic(Jenkins.class);
+        jenkins = mock(Jenkins.class);
+        mockedJenkins.when(Jenkins::get).thenReturn(jenkins);
+    }
+
+    @After
+    public void tearDown() {
+        mockedJenkins.close();
+    }
 
     @Test
     public void should_know_current_build_number() {
@@ -42,9 +67,9 @@ public class KnowsLastCompletedBuildDetailsTest {
      */
 
     @Test
-    public void should_know_how_long_the_last_build_took_once_its_finished() throws Exception {
+    public void should_know_how_long_the_last_build_took_once_its_finished() {
         view = a(jobView().which(new KnowsLastCompletedBuildDetails()).of(
-                a(job().whereTheLast(build().finishedWith(SUCCESS).and().took(3)))));
+                a(job().whereTheLast(build().finishedWith(Result.SUCCESS).and().took(3)))));
 
         assertThat(lastCompletedBuildOf(view).duration(), is("3m 0s"));
     }

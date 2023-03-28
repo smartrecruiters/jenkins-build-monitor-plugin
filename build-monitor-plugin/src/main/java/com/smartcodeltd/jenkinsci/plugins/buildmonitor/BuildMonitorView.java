@@ -24,15 +24,26 @@
 package com.smartcodeltd.jenkinsci.plugins.buildmonitor;
 
 import com.smartcodeltd.jenkinsci.plugins.buildmonitor.api.Respond;
+import com.smartcodeltd.jenkinsci.plugins.buildmonitor.build.GetBuildViewModel;
 import com.smartcodeltd.jenkinsci.plugins.buildmonitor.facade.StaticJenkinsAPIs;
 import com.smartcodeltd.jenkinsci.plugins.buildmonitor.installation.BuildMonitorInstallation;
 import com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.JobView;
 import com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.JobViews;
 import hudson.Extension;
+import hudson.Util;
 import hudson.model.Descriptor.FormException;
 import hudson.model.ItemGroup;
 import hudson.model.Job;
 import hudson.model.ListView;
+import hudson.model.View;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import javax.servlet.ServletException;
+
+import jenkins.model.Jenkins;
 import hudson.model.TopLevelItem;
 import hudson.model.ViewGroup;
 import jenkins.model.Jenkins;
@@ -101,7 +112,7 @@ public class BuildMonitorView extends ListView {
     public String currentOrder() {
         return currentConfig().getOrder().getClass().getSimpleName();
     }
-    
+
     @SuppressWarnings("unused") // used in the configure-entries.jelly form
     public String currentbuildFailureAnalyzerDisplayedField() {
         return currentConfig().getBuildFailureAnalyzerDisplayedField().getValue();
@@ -110,6 +121,51 @@ public class BuildMonitorView extends ListView {
     @SuppressWarnings("unused") // used in the configure-entries.jelly form
     public boolean isDisplayCommitters() {
         return currentConfig().shouldDisplayCommitters();
+    }
+
+    // used in the configure-entries.jelly and main-settings.jelly forms
+    @SuppressWarnings("unused")
+    public double getTextScale() {
+        return currentConfig().getTextScale();
+    }
+
+    // used in the configure-entries.jelly and main-settings.jelly forms
+    @SuppressWarnings("unused")
+    public int getMaxColumns() {
+        return currentConfig().getMaxColumns();
+    }
+
+    // used in the configure-entries.jelly and main-settings.jelly forms
+    @SuppressWarnings("unused")
+    public boolean isColourBlindMode() {
+        return currentConfig().colourBlindMode();
+    }
+
+    // used in the configure-entries.jelly and main-settings.jelly forms
+    @SuppressWarnings("unused")
+    public boolean isReduceMotion() {
+        return currentConfig().reduceMotion();
+    }
+
+    // used in the configure-entries.jelly and main-settings.jelly forms
+    @SuppressWarnings("unused")
+    public boolean isShowBadges() {
+        return currentConfig().showBadges();
+    }
+
+    @SuppressWarnings("unused") // used in the configure-entries.jelly form
+    public String currentDisplayBadges() {
+        return currentConfig().getDisplayBadges().name();
+    }
+
+    @SuppressWarnings("unused") // used in the configure-entries.jelly form
+    public String currentDisplayBadgesFrom() {
+        return currentConfig().getDisplayBadgesFrom().getClass().getSimpleName();
+    }
+
+    @SuppressWarnings("unused") // used in the configure-entries.jelly form
+    public boolean isDisplayJUnitProgress() {
+        return currentConfig().shouldDisplayJUnitProgress();
     }
 
     private static final BuildMonitorInstallation installation = new BuildMonitorInstallation();
@@ -125,6 +181,10 @@ public class BuildMonitorView extends ListView {
     }
 
     @Override
+    protected void initColumns() {
+    }
+
+    @Override
     protected void submit(StaplerRequest req) throws ServletException, IOException, FormException {
         super.submit(req);
 
@@ -133,15 +193,41 @@ public class BuildMonitorView extends ListView {
         synchronized (this) {
 
             String requestedOrdering = req.getParameter("order");
-            title                    = req.getParameter("title");
+            String displayBadgesFrom = req.getParameter("displayBadgesFrom");
+            title = req.getParameter("title");
+            String maxColumns = req.getParameter("maxColumns");
+            String textScale = req.getParameter("textScale");
 
+            currentConfig().setColourBlindMode(json.optBoolean("colourBlindMode", false));
+            currentConfig().setReduceMotion(json.optBoolean("reduceMotion", false));
+            currentConfig().setShowBadges(json.optBoolean("showBadges", true));
+            currentConfig().setDisplayBadges(req.getParameter("displayBadges"));
             currentConfig().setDisplayCommitters(json.optBoolean("displayCommitters", true));
             currentConfig().setBuildFailureAnalyzerDisplayedField(req.getParameter("buildFailureAnalyzerDisplayedField"));
-            
+            currentConfig().setDisplayJUnitProgress(json.optBoolean("displayJUnitProgress", true));
+
             try {
                 currentConfig().setOrder(orderIn(requestedOrdering));
             } catch (Exception e) {
                 throw new FormException("Can't order projects by " + requestedOrdering, "order");
+            }
+
+            try {
+                currentConfig().setMaxColumns(Integer.parseInt(maxColumns));
+            } catch (Exception e) {
+                throw new FormException("Invalid value of 'Maximum number of columns': '" + maxColumns + "' (should be double).", maxColumns);
+            }
+
+            try {
+                currentConfig().setTextScale(Double.parseDouble(textScale));
+            } catch (Exception e) {
+                throw new FormException("Invalid value of 'Text scale': '" + textScale + "' (should be double).", textScale);
+            }
+
+            try {
+                currentConfig().setDisplayBadgesFrom(getBuildViewModelIn(displayBadgesFrom));
+            } catch (Exception e) {
+                throw new FormException("Can't display badges from " + displayBadgesFrom, "displayBadgesFrom");
             }
         }
     }
@@ -151,7 +237,6 @@ public class BuildMonitorView extends ListView {
      * it can only work with net.sf.JSONObject in order to produce correct application/json output
      *
      * @return Json representation of JobViews
-     * @throws Exception
      */
     @JavaScriptMethod
     public JSONObject fetchJobViews() throws Exception {
@@ -160,20 +245,20 @@ public class BuildMonitorView extends ListView {
 
     // --
     private boolean isGiven(String value) {
-        return ! (value == null || "".equals(value));
+        return !(value == null || "".equals(value));
     }
 
     private List<JobView> jobViews() {
         JobViews views = new JobViews(new StaticJenkinsAPIs(), currentConfig());
 
         //A little bit of evil to make the type system happy.
-        @SuppressWarnings("unchecked")
-        List<Job<?, ?>> projects = new ArrayList(filter(super.getItems(), Job.class));
-        List<JobView> jobs = new ArrayList<JobView>();
+        @SuppressWarnings({"unchecked", "rawtypes"})
+        List<Job<?, ?>> projects = new ArrayList(Util.filter(super.getItems(), Job.class));
+        List<JobView> jobs = new ArrayList<>();
 
-        Collections.sort(projects, currentConfig().getOrder());
+        projects.sort(currentConfig().getOrder());
 
-        for (Job project : projects) {
+        for (Job<?, ?> project : projects) {
             jobs.add(views.viewOf(project));
         }
 
@@ -181,20 +266,23 @@ public class BuildMonitorView extends ListView {
     }
 
     /**
-     * When Jenkins is started up, Jenkins::loadTasks is called.
-     * At that point config.xml file is unmarshaled into a Jenkins object containing a list of Views, including BuildMonitorView objects.
+     * When Jenkins is started up, {@link Jenkins#loadTasks} is called. At that point the {@code
+     * config.xml} file is unmarshaled into a {@link Jenkins} object containing a list of {@link
+     * View}s, including {@link BuildMonitorView} objects.
      *
-     * The unmarshaling process sets private fields on BuildMonitorView objects directly, ignoring their constructors.
-     * This means that if there's a private field added to this class (say "config"), the previously persisted versions of this class can no longer
-     * be correctly un-marshaled into the new version as they don't define the new field and the object ends up in an inconsistent state.
+     * <p>The unmarshaling process sets private fields on {@link BuildMonitorView} objects directly,
+     * ignoring their constructors. This means that if there's a private field added to this class
+     * (say {@code config}), the previously persisted versions of this class can no longer be
+     * correctly unmarshaled into the new version as they don't define the new field and the object
+     * ends up in an inconsistent state.
      *
-     * @return the previously persisted version of the config object, default config, or the deprecated "order" object, converted to a "config" object.
+     * @return the previously persisted version of the config object, default config, or the
+     * deprecated "order" object, converted to a "config" object.
      */
     private Config currentConfig() {
         if (creatingAFreshView()) {
             config = Config.defaultConfig();
-        }
-        else if (deserailisingFromAnOlderFormat()) {
+        } else if (deserailisingFromAnOlderFormat()) {
             migrateFromOldToNewConfigFormat();
         }
 
@@ -220,10 +308,16 @@ public class BuildMonitorView extends ListView {
     }
 
     @SuppressWarnings("unchecked")
-    private Comparator<Job<?, ?>> orderIn(String requestedOrdering) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+    private Comparator<Job<?, ?>> orderIn(String requestedOrdering) throws ReflectiveOperationException {
         String packageName = this.getClass().getPackage().getName() + ".order.";
 
-        return (Comparator<Job<?, ?>>) Class.forName(packageName + requestedOrdering).newInstance();
+        return (Comparator<Job<?, ?>>) Class.forName(packageName + requestedOrdering).getDeclaredConstructor().newInstance();
+    }
+
+    private GetBuildViewModel getBuildViewModelIn(String requestedBuild) throws ReflectiveOperationException {
+        String packageName = this.getClass().getPackage().getName() + ".build.";
+
+        return (GetBuildViewModel) Class.forName(packageName + requestedBuild).getDeclaredConstructor().newInstance();
     }
 
     private Config config;

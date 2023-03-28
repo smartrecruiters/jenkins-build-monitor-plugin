@@ -1,10 +1,9 @@
 package com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.features.Feature;
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.map.JsonSerializer;
-import org.codehaus.jackson.map.SerializerProvider;
-
 import java.io.IOException;
 
 /**
@@ -34,7 +33,7 @@ public class JobViewSerialiser extends JsonSerializer<JobView> {
 
     private String nameOf(Object serialised) {
         // http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/6-b14/java/beans/Introspector.java#265
-        char chars[] = serialised.getClass().getSimpleName().toString().toCharArray();
+        char[] chars = serialised.getClass().getSimpleName().toCharArray();
         chars[0] = Character.toLowerCase(chars[0]);
 
         return new String(chars);

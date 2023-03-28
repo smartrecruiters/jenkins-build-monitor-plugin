@@ -11,9 +11,17 @@
 .java-version
 
 target
-work*
+work
 
+node
 node_modules
 
 use-node
-.*
+.DS_Store
+
+chromedriver.exe
+
+!.travis.yml
+
+build-monitor-plugin/src/main/webapp/styles/index.css
+build-monitor-plugin/src/main/webapp/styles/main.js

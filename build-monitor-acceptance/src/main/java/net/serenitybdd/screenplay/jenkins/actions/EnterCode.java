@@ -1,28 +1,26 @@
 package net.serenitybdd.screenplay.jenkins.actions;
 
-import com.google.common.base.Joiner;
-import net.serenitybdd.screenplay.Action;
+import static net.serenitybdd.screenplay.Tasks.instrumented;
+
+import java.util.List;
 import net.serenitybdd.screenplay.Actor;
+import net.serenitybdd.screenplay.Interaction;
+import net.serenitybdd.screenplay.actions.Click;
 import net.serenitybdd.screenplay.targets.Target;
 import net.serenitybdd.screenplayx.actions.Evaluate;
 import net.thucydides.core.annotations.Step;
 
-import java.util.List;
-
-import static java.util.Arrays.asList;
-import static net.serenitybdd.screenplay.Tasks.instrumented;
-
 public class EnterCode {
     public static EnterCode asFollows(String... lines) {
-        return new EnterCode(asList(lines));
+        return new EnterCode(List.of(lines));
     }
 
-    public Action intoTheCodeMirror(Target editorField) {
-        return instrumented(EnterCodeIntoCodeMirrorEditor.class, editorField, Joiner.on(System.lineSeparator()).join(lines));
+    public Interaction intoTheCodeMirror(Target editorField) {
+        return instrumented(EnterCodeIntoCodeMirrorEditor.class, editorField, String.join(System.lineSeparator(), lines));
     }
 
-    public Action intoThePipelineEditor(Target editorField) {
-        return instrumented(EnterCodeIntoPipelineEditor.class, editorField, Joiner.on(System.lineSeparator()).join(lines));
+    public Interaction intoThePipelineEditor(Target editorField) {
+        return instrumented(EnterCodeIntoPipelineEditor.class, editorField, String.join(System.lineSeparator(), lines));
     }
 
     public EnterCode(List<String> lines) {
@@ -31,7 +29,7 @@ public class EnterCode {
 
     private final List<String> lines;
 
-    public static class EnterCodeIntoCodeMirrorEditor implements Action {
+    public static class EnterCodeIntoCodeMirrorEditor implements Interaction {
 
         private final Target target;
         private final String code;
@@ -44,7 +42,9 @@ public class EnterCode {
         @Override
         @Step("{0} enters '#code' into the code editor field")
         public <T extends Actor> void performAs(T actor) {
-            actor.attemptsTo(Evaluate.javascript(
+            actor.attemptsTo(
+              Click.on(target),
+              Evaluate.javascript(
                     setCodeMirrorValueTo(code),
                     target.resolveFor(actor)
             ));
@@ -67,7 +67,7 @@ public class EnterCode {
         }
     }
 
-    private static class EnterCodeIntoPipelineEditor implements Action {
+    private static class EnterCodeIntoPipelineEditor implements Interaction {
 
         private final Target target;
         private final String code;

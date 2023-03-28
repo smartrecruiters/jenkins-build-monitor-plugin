@@ -1,24 +1,21 @@
 package com.smartcodeltd.jenkinsci.plugins.buildmonitor.api;
 
-import com.google.common.base.Stopwatch;
-import com.google.common.collect.ImmutableMap;
-import org.codehaus.jackson.annotate.JsonProperty;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /* package */ class Success<T> {
 
-    private final Stopwatch stopwatch;
+    private final long startTimeNanos;
     private T data;
 
     public Success(T data) {
         this.data = data;
-        this.stopwatch = new Stopwatch();
-        stopwatch.start();
+        this.startTimeNanos = System.nanoTime();
     }
 
     public static <T> Success successful(T data) {
-        return new Success<T>(data);
+        return new Success<>(data);
     }
 
     @JsonProperty
@@ -28,8 +25,8 @@ import java.util.Map;
 
     @JsonProperty
     public Map<String, ?> meta() {
-        return ImmutableMap.<String, Object>of(
-                "response_time_ms", stopwatch.elapsedMillis()
-        );
+        return Map.of(
+                "response_time_ms",
+                TimeUnit.MILLISECONDS.convert(System.nanoTime() - startTimeNanos, TimeUnit.NANOSECONDS));
     }
 }

@@ -1,43 +1,33 @@
 package features;
 
+import static net.serenitybdd.screenplay.GivenWhenThen.givenThat;
+import static net.serenitybdd.screenplay.GivenWhenThen.seeThat;
+import static net.serenitybdd.screenplay.GivenWhenThen.then;
+import static net.serenitybdd.screenplay.GivenWhenThen.when;
+
+import com.smartcodeltd.jenkinsci.plugins.build_monitor.matchers.ProjectInformationMatchers;
+import com.smartcodeltd.jenkinsci.plugins.build_monitor.model.ProjectStatus;
 import com.smartcodeltd.jenkinsci.plugins.build_monitor.questions.ProjectWidget;
 import com.smartcodeltd.jenkinsci.plugins.build_monitor.tasks.HaveABuildMonitorViewCreated;
-import environment.JenkinsSandbox;
-import net.serenitybdd.integration.jenkins.JenkinsInstance;
-import net.serenitybdd.junit.runners.SerenityRunner;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.abilities.BrowseTheWeb;
 import net.serenitybdd.screenplay.jenkins.HaveAFailingProjectCreated;
 import net.serenitybdd.screenplay.jenkins.HaveASuccessfulProjectCreated;
 import net.serenitybdd.screenplayx.actions.Navigate;
-import net.thucydides.core.annotations.Managed;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.openqa.selenium.WebDriver;
 
-import static com.smartcodeltd.jenkinsci.plugins.build_monitor.matchers.ProjectInformationMatchers.displaysProjectStatusAs;
-import static com.smartcodeltd.jenkinsci.plugins.build_monitor.model.ProjectStatus.Failing;
-import static com.smartcodeltd.jenkinsci.plugins.build_monitor.model.ProjectStatus.Successful;
-import static net.serenitybdd.screenplay.GivenWhenThen.*;
+public class ProjectStatusShouldBeEasyToDetermine extends BuildMonitorAcceptanceTest {
 
-@RunWith(SerenityRunner.class)
-public class ProjectStatusShouldBeEasyToDetermine {
-
-    Actor anna = Actor.named("Anna");
-
-    @Managed public WebDriver herBrowser;
-
-    @Rule public JenkinsInstance jenkins = JenkinsSandbox.configure().create();
+    private Actor anna = Actor.named("Anna");
 
     @Before
     public void actorCanBrowseTheWeb() {
-        anna.can(BrowseTheWeb.with(herBrowser));
+        anna.can(BrowseTheWeb.with(browser));
     }
 
     @Test
-    public void visualising_a_successful_project() throws Exception {
+    public void visualising_a_successful_project() {
 
         givenThat(anna).wasAbleTo(
                 Navigate.to(jenkins.url()),
@@ -47,12 +37,12 @@ public class ProjectStatusShouldBeEasyToDetermine {
         when(anna).attemptsTo(HaveABuildMonitorViewCreated.showingAllTheProjects());
 
         then(anna).should(seeThat(ProjectWidget.of("My App").information(),
-                displaysProjectStatusAs(Successful)
+                ProjectInformationMatchers.displaysProjectStatusAs(ProjectStatus.Successful)
         ));
     }
 
     @Test
-    public void visualising_a_failing_project() throws Exception {
+    public void visualising_a_failing_project() {
 
         givenThat(anna).wasAbleTo(
                 Navigate.to(jenkins.url()),
@@ -62,7 +52,7 @@ public class ProjectStatusShouldBeEasyToDetermine {
         when(anna).attemptsTo(HaveABuildMonitorViewCreated.showingAllTheProjects());
 
         then(anna).should(seeThat(ProjectWidget.of("My App").information(),
-                displaysProjectStatusAs(Failing)
+                ProjectInformationMatchers.displaysProjectStatusAs(ProjectStatus.Failing)
         ));
     }
 }

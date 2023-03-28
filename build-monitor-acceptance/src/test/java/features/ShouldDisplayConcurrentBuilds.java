@@ -1,11 +1,13 @@
 package features;
 
+import static net.serenitybdd.screenplay.GivenWhenThen.givenThat;
+import static net.serenitybdd.screenplay.GivenWhenThen.seeThat;
+import static net.serenitybdd.screenplay.GivenWhenThen.then;
+import static net.serenitybdd.screenplay.GivenWhenThen.when;
+import static org.hamcrest.Matchers.is;
+
 import com.smartcodeltd.jenkinsci.plugins.build_monitor.questions.ProjectWidget;
 import com.smartcodeltd.jenkinsci.plugins.build_monitor.tasks.HaveABuildMonitorViewCreated;
-import environment.JenkinsSandbox;
-import net.serenitybdd.integration.jenkins.JenkinsInstance;
-import net.serenitybdd.integration.jenkins.environment.rules.InstallPlugins;
-import net.serenitybdd.junit.runners.SerenityRunner;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.abilities.BrowseTheWeb;
 import net.serenitybdd.screenplay.jenkins.HaveAProjectCreated;
@@ -14,37 +16,21 @@ import net.serenitybdd.screenplay.jenkins.tasks.configuration.Enable;
 import net.serenitybdd.screenplay.jenkins.tasks.configuration.build_steps.ExecuteAShellScript;
 import net.serenitybdd.screenplay.jenkins.tasks.configuration.build_steps.ShellScript;
 import net.serenitybdd.screenplayx.actions.Navigate;
-import net.thucydides.core.annotations.Managed;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.openqa.selenium.WebDriver;
 
-import static net.serenitybdd.screenplay.GivenWhenThen.*;
-import static org.hamcrest.Matchers.is;
-
-@RunWith(SerenityRunner.class)
-public class ShouldDisplayConcurrentBuilds {
+public class ShouldDisplayConcurrentBuilds extends BuildMonitorAcceptanceTest {
     private static String My_App = "My App";
 
     Actor dave = Actor.named("Dave");
 
-    @Managed
-    public WebDriver hisBrowser;
-
-    @Rule
-    public JenkinsInstance jenkins = JenkinsSandbox.configure().afterStart(
-            InstallPlugins.fromUpdateCenter("description-setter")
-    ).create();
-
     @Before
     public void actorCanBrowseTheWeb() {
-        dave.can(BrowseTheWeb.with(hisBrowser));
+        dave.can(BrowseTheWeb.with(browser));
     }
 
     @Test
-    public void displaying_concurrent_builds() throws Exception {
+    public void displaying_concurrent_builds() {
         givenThat(dave).wasAbleTo(
                 Navigate.to(jenkins.url()),
                 HaveAProjectCreated.called(My_App).andConfiguredTo(
@@ -52,6 +38,7 @@ public class ShouldDisplayConcurrentBuilds {
                         ExecuteAShellScript.that(sleepsFor(300))
                 ),
                 ScheduleABuild.of(My_App),
+                Navigate.to(jenkins.url()),
                 ScheduleABuild.of(My_App)
         );
 

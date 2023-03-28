@@ -1,13 +1,8 @@
 package net.serenitybdd.screenplay.jenkins.tasks.configuration.build_steps;
 
-import com.google.common.base.Function;
-import com.google.common.base.Joiner;
-
-import javax.annotation.Nullable;
 import java.util.List;
-
-import static com.google.common.collect.Lists.transform;
-import static java.util.Arrays.asList;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class GroovyScript {
 
@@ -15,18 +10,24 @@ public class GroovyScript {
         return new GroovyScript(descriptionOfScriptsBehaviour);
     }
 
+    public GroovyScript separatedBy(String lineSeparator) {
+        this.lineSeparator = lineSeparator;
+
+        return this;
+    }
+
     public GroovyScript definedAs(String... lines) {
-        return this.definedAs(asList(lines));
+        return this.definedAs(List.of(lines));
     }
 
     public GroovyScript definedAs(List<String> lines) {
-        this.code = Joiner.on('\n').join(lines);
+        this.code = String.join(this.lineSeparator, lines);
 
         return this;
     }
 
     public GroovyScript andOutputs(String... lines) {
-        return definedAs(transform(asList(lines), mapEachLineTo("echo \"%s\";")));
+        return definedAs(Stream.of(lines).map(line -> String.format("echo \"%s\";", line)).collect(Collectors.toList()));
     }
 
     public String code() {
@@ -42,17 +43,9 @@ public class GroovyScript {
         this.description = descriptionOfScriptsBehaviour;
     }
 
-    private Function<String, String> mapEachLineTo(final String template) {
-        return new Function<String, String>() {
-            @Nullable
-            @Override
-            public String apply(@Nullable String line) {
-                return String.format(template, line);
-            }
-        };
-    }
-
     private final String description;
+
+    private String lineSeparator = "\n";
 
     private String code = "";
 }

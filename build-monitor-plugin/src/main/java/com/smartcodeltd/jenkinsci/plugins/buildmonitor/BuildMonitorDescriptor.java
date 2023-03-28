@@ -3,12 +3,11 @@ package com.smartcodeltd.jenkinsci.plugins.buildmonitor;
 import hudson.Util;
 import hudson.model.ViewDescriptor;
 import hudson.util.FormValidation;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
-
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 public final class BuildMonitorDescriptor extends ViewDescriptor {
 
@@ -23,6 +22,7 @@ public final class BuildMonitorDescriptor extends ViewDescriptor {
     }
 
     // Copy-n-paste from ListView$Descriptor as sadly we cannot inherit from that class
+    @SuppressWarnings({"lgtm[jenkins/csrf]", "lgtm[jenkins/no-permission-check]"})
     public FormValidation doCheckIncludeRegex(@QueryParameter String value) {
         String v = Util.fixEmpty(value);
         if (v != null) {
@@ -36,7 +36,7 @@ public final class BuildMonitorDescriptor extends ViewDescriptor {
     }
 
     @Override
-    public boolean configure(StaplerRequest req, JSONObject json) throws FormException {
+    public boolean configure(StaplerRequest req, JSONObject json) {
         req.bindJSON(this, json.getJSONObject("build-monitor"));
         save();
 
@@ -52,5 +52,41 @@ public final class BuildMonitorDescriptor extends ViewDescriptor {
     @SuppressWarnings("unused") // used in global.jelly
     public void setPermissionToCollectAnonymousUsageStatistics(boolean collect) {
         this.permissionToCollectAnonymousUsageStatistics = collect;
+    }
+
+    @SuppressWarnings({"lgtm[jenkins/csrf]", "lgtm[jenkins/no-permission-check]"})
+    public FormValidation doCheckMaxColumns(@QueryParameter String value) {
+        String v = Util.fixEmpty(value);
+        if (v != null) {
+            try {
+                int intValue = Integer.parseInt(v);
+                if (intValue > 0) {
+                    return FormValidation.ok();
+                } else {
+                    return FormValidation.error("Must be an integer, greater than 0.");
+                }
+            } catch (NumberFormatException e) {
+                return FormValidation.error("Must be an integer.");
+            }
+        }
+        return FormValidation.ok();
+    }
+
+    @SuppressWarnings({"lgtm[jenkins/csrf]", "lgtm[jenkins/no-permission-check]"})
+    public FormValidation doCheckTextScale(@QueryParameter String value) {
+        String v = Util.fixEmpty(value);
+        if (v != null) {
+            try {
+                double doubleValue = Double.parseDouble(v);
+                if (doubleValue > 0.0) {
+                    return FormValidation.ok();
+                } else {
+                    return FormValidation.error("Must be a double, greater than 0.0.");
+                }
+            } catch (NumberFormatException e) {
+                return FormValidation.error("Must be a double.");
+            }
+        }
+        return FormValidation.ok();
     }
 }

@@ -1,9 +1,7 @@
 package com.smartcodeltd.jenkinsci.plugins.buildmonitor.installation;
 
 import com.smartcodeltd.jenkinsci.plugins.buildmonitor.facade.StaticJenkinsAPIs;
-
-import static com.google.common.base.Charsets.UTF_8;
-import static com.google.common.hash.Hashing.sha256;
+import org.apache.commons.codec.digest.DigestUtils;
 
 public class BuildMonitorInstallation {
     private static final String UNKNOWN = "unknown";
@@ -26,7 +24,7 @@ public class BuildMonitorInstallation {
     public String anonymousCorrelationId() {
         // we only need to calculate this once
         if (UNKNOWN.equalsIgnoreCase(anonymousCorrelationId)) {
-            anonymousCorrelationId = sha256().hashString(jenkins.encodedPublicKey(), UTF_8).toString();
+            anonymousCorrelationId = DigestUtils.sha256Hex(jenkins.encodedPublicKey());
         }
 
         return anonymousCorrelationId;
@@ -43,9 +41,7 @@ public class BuildMonitorInstallation {
                 : Audience.EndUsers;
     }
 
-    private static final BuildMonitorBuildProperties buildProperties = new BuildMonitorBuildProperties("build-monitor.properties");
-
     public String buildMonitorVersion() {
-        return buildProperties.get("version");
+        return jenkins.getPluginVersion("build-monitor-plugin");
     }
 }

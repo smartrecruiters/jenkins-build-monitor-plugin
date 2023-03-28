@@ -1,11 +1,13 @@
 package com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.syntacticsugar;
 
-import com.google.common.base.Supplier;
-import com.smartcodeltd.jenkinsci.plugins.buildmonitor.Config;
-import com.smartcodeltd.jenkinsci.plugins.buildmonitor.facade.RelativeLocation;
-
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import com.smartcodeltd.jenkinsci.plugins.buildmonitor.Config;
+import com.smartcodeltd.jenkinsci.plugins.buildmonitor.facade.RelativeLocation;
+import com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.features.HasBadgesBadgePlugin;
+import com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.features.HasJunitRealtime;
+import java.util.function.Supplier;
 
 public class Sugar {
 
@@ -21,8 +23,24 @@ public class Sugar {
         return new BuildStateRecipe();
     }
 
-    public static BadgeRecipe badge() {
-        return new BadgeRecipe();
+    public static HasBadgesBadgePlugin hasBadgePluginBadges(Config config) {
+        return new HasBadgesBadgePlugin(config);
+    }
+
+    public static HasBadgesBadgePlugin hasBadgePluginBadges(ConfigStateRecipe config) {
+        return new HasBadgesBadgePlugin(config.get());
+    }
+
+    public static BadgeBadgePluginRecipe badgePluginBadge() {
+        return new BadgeBadgePluginRecipe();
+    }
+
+    public static HasJunitRealtime hasJunitRealtime() {
+        return new HasJunitRealtime();
+    }
+
+    public static RealtimeTestPluginRecipe realtimeTest() {
+        return new RealtimeTestPluginRecipe();
     }
 
     public static <X> X a(Supplier<X> recipe) {
@@ -45,5 +63,9 @@ public class Sugar {
 
     public static Config withDefaultConfig() {
         return new ConfigStateRecipe().get();
+    }
+
+    public static ConfigStateRecipe withConfig() {
+        return new ConfigStateRecipe();
     }
 }

@@ -1,44 +1,32 @@
 package features;
 
+import static net.serenitybdd.screenplay.GivenWhenThen.givenThat;
+import static net.serenitybdd.screenplay.GivenWhenThen.seeThat;
+import static net.serenitybdd.screenplay.GivenWhenThen.then;
+import static net.serenitybdd.screenplay.GivenWhenThen.when;
+import static org.hamcrest.Matchers.containsString;
+
 import com.smartcodeltd.jenkinsci.plugins.build_monitor.questions.ProjectWidget;
 import com.smartcodeltd.jenkinsci.plugins.build_monitor.tasks.HaveABuildMonitorViewCreated;
 import com.sonyericsson.jenkins.plugins.bfa.HaveAShellScriptFailureCauseDefined;
-import environment.JenkinsSandbox;
-import net.serenitybdd.integration.jenkins.JenkinsInstance;
-import net.serenitybdd.integration.jenkins.environment.rules.InstallPlugins;
-import net.serenitybdd.junit.runners.SerenityRunner;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.abilities.BrowseTheWeb;
 import net.serenitybdd.screenplay.jenkins.HaveAFailingProjectCreated;
 import net.serenitybdd.screenplayx.actions.Navigate;
-import net.thucydides.core.annotations.Managed;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.openqa.selenium.WebDriver;
 
-import static net.serenitybdd.screenplay.GivenWhenThen.*;
-import static org.hamcrest.Matchers.containsString;
-
-@RunWith(SerenityRunner.class)
-public class ShouldTellWhatBrokeTheBuild {
+public class ShouldTellWhatBrokeTheBuild extends BuildMonitorAcceptanceTest {
 
     Actor dave = Actor.named("Dave");
 
-    @Managed public WebDriver hisBrowser;
-
-    @Rule public JenkinsInstance jenkins = JenkinsSandbox.configure().afterStart(
-            InstallPlugins.fromUpdateCenter("cloudbees-folder", "build-failure-analyzer")
-    ).create();
-
     @Before
     public void actorCanBrowseTheWeb() {
-        dave.can(BrowseTheWeb.with(hisBrowser));
+        dave.can(BrowseTheWeb.with(browser));
     }
 
     @Test
-    public void displaying_potential_failure_cause() throws Exception {
+    public void displaying_potential_failure_cause() {
         givenThat(dave).wasAbleTo(
                 Navigate.to(jenkins.url()),
                 HaveAShellScriptFailureCauseDefined.called("Rogue AI").describedAs("Pod bay doors didn't open"),

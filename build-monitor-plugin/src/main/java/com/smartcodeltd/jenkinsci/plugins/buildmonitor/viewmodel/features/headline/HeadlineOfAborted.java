@@ -1,14 +1,12 @@
 package com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.features.headline;
 
-import com.google.common.base.Optional;
 import com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.BuildViewModel;
 import com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.JobView;
 import hudson.model.Result;
 import hudson.model.User;
+import java.util.Optional;
 import jenkins.model.CauseOfInterruption;
 import jenkins.model.InterruptedBuildAction;
-
-import static java.lang.String.format;
 
 /**
  * @author Jan Molak
@@ -40,7 +38,7 @@ public class HeadlineOfAborted implements CandidateHeadline {
             Optional<String> username = userResponsibleFor(interruption.get());
 
             if (username.isPresent()) {
-                return format("Execution aborted by %s", username.get());
+                return String.format("Execution aborted by %s", username.get());
             }
         }
 
@@ -59,6 +57,6 @@ public class HeadlineOfAborted implements CandidateHeadline {
             }
         }
 
-        return Optional.absent();
+        return Optional.empty();
     }
 }

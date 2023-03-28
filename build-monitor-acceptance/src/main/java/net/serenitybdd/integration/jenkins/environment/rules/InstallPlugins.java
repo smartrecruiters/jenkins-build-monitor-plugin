@@ -6,8 +6,4 @@ public class InstallPlugins {
     public static InstallPluginsFromDisk fromDisk(Path... locations) {
         return new InstallPluginsFromDisk(locations);
     }
-
-    public static InstallPluginsFromUpdateCenter fromUpdateCenter(String... pluginIDs) {
-        return new InstallPluginsFromUpdateCenter(pluginIDs);
-    }
 }

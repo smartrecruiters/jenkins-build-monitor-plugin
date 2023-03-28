@@ -1,28 +1,25 @@
 package com.smartcodeltd.jenkinsci.plugins.build_monitor.tasks;
 
+import static net.serenitybdd.screenplay.Tasks.instrumented;
+
 import com.smartcodeltd.jenkinsci.plugins.build_monitor.tasks.configuration.SaveTheChangesToBuildMonitor;
-import net.serenitybdd.screenplay.jenkins.tasks.configuration.TodoList;
+import java.util.List;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Performable;
 import net.serenitybdd.screenplay.Task;
+import net.serenitybdd.screenplay.jenkins.tasks.configuration.TodoList;
 import net.thucydides.core.annotations.Step;
-
-import java.util.List;
-
-import static java.util.Arrays.asList;
-import static net.serenitybdd.screenplay.Tasks.instrumented;
 
 public class ConfigureEmptyBuildMonitorView implements Task {
 
     public static ConfigureEmptyBuildMonitorView to(Task... configurationTasks) {
-        return instrumented(ConfigureEmptyBuildMonitorView.class, asList(configurationTasks));
+        return instrumented(ConfigureEmptyBuildMonitorView.class, List.of(configurationTasks));
     }
 
     @Override
     @Step("{0} configures the Build Monitor View")
     public <T extends Actor> void performAs(T actor) {
         actor.attemptsTo(
-                AddProjects.toAnEmptyBuildMonitor(),
                 configureTheView,
                 SaveTheChangesToBuildMonitor.andExitTheConfigurationScreen()
         );

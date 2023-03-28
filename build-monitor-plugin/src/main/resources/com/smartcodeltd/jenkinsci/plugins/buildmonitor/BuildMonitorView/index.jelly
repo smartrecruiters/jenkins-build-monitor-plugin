@@ -1,3 +1,4 @@
+<?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:l="/lib/layout" xmlns:x="jelly:xml">
 
     <st:contentType value="text/html;charset=UTF-8"/>
@@ -41,7 +42,7 @@
             <link rel="stylesheet" href="${resourcesURL}/vendor/angular-slider-5.4.0/rzslider.min.css"/>
 
             <link rel="stylesheet" href="${resourcesURL}/themes/industrial.css"/>
-            <link rel="stylesheet" href="${rootURL}/build-monitor-plugin/style.css"/>
+            <link rel="stylesheet" href="${resourcesURL}/styles/index.css"/>
 
             <script src="${resURL}/scripts/yui/cookie/cookie-min.js"></script>
 
@@ -116,11 +117,11 @@
                     <notifier />
                 </div>
                 <div class="version-info column">
-                    <a href="https://github.com/jan-molak/jenkins-build-monitor-plugin"
+                    <a href="https://github.com/jenkinsci/build-monitor-plugin"
                        title="Learn more about the Build Monitor project"
                        rel="external">Build Monitor</a>
                     version
-                    <a href="https://github.com/jan-molak/jenkins-build-monitor-plugin/releases"
+                    <a href="https://github.com/jenkinsci/build-monitor-plugin/releases"
                        title="Is your Build Monitor up to date?"
                        rel="external">${it.installation.buildMonitorVersion()}</a>
                     brought to you by
