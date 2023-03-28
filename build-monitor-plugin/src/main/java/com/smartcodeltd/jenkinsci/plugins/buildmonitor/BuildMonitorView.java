@@ -23,6 +23,12 @@
  */
 package com.smartcodeltd.jenkinsci.plugins.buildmonitor;
 
+import javax.servlet.ServletException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 import com.smartcodeltd.jenkinsci.plugins.buildmonitor.api.Respond;
 import com.smartcodeltd.jenkinsci.plugins.buildmonitor.build.GetBuildViewModel;
 import com.smartcodeltd.jenkinsci.plugins.buildmonitor.facade.StaticJenkinsAPIs;
@@ -35,33 +41,14 @@ import hudson.model.Descriptor.FormException;
 import hudson.model.ItemGroup;
 import hudson.model.Job;
 import hudson.model.ListView;
-import hudson.model.View;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import javax.servlet.ServletException;
-
-import jenkins.model.Jenkins;
 import hudson.model.TopLevelItem;
+import hudson.model.View;
 import hudson.model.ViewGroup;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
-
-import javax.servlet.ServletException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import static hudson.Util.filter;
 
 /**
  * @author Jan Molak
