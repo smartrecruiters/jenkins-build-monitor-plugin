@@ -1,5 +1,5 @@
 [
         artifactType : 'lib',
-        publishDocker: 'jdk17',
+        publishDocker: 'jdk17-nodejs16',
         libNotificationChannel: 'dnd_ghflow'
 ]
