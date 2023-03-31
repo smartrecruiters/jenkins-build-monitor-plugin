@@ -23,6 +23,12 @@
  */
 package com.smartcodeltd.jenkinsci.plugins.buildmonitor;
 
+import javax.servlet.ServletException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 import com.smartcodeltd.jenkinsci.plugins.buildmonitor.api.Respond;
 import com.smartcodeltd.jenkinsci.plugins.buildmonitor.build.GetBuildViewModel;
 import com.smartcodeltd.jenkinsci.plugins.buildmonitor.facade.StaticJenkinsAPIs;
@@ -32,14 +38,12 @@ import com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.JobViews;
 import hudson.Extension;
 import hudson.Util;
 import hudson.model.Descriptor.FormException;
+import hudson.model.ItemGroup;
 import hudson.model.Job;
 import hudson.model.ListView;
+import hudson.model.TopLevelItem;
 import hudson.model.View;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import javax.servlet.ServletException;
+import hudson.model.ViewGroup;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -66,6 +70,16 @@ public class BuildMonitorView extends ListView {
         this.title = title;
     }
 
+    @Override
+    public ViewGroup getOwner() {
+        return Jenkins.getInstance();
+    }
+
+    @Override
+    public ItemGroup<? extends TopLevelItem> getOwnerItemGroup() {
+        return Jenkins.getInstance();
+    }
+
     @SuppressWarnings("unused") // used in .jelly
     public String getTitle() {
         return isGiven(title) ? title : getDisplayName();
@@ -85,7 +99,7 @@ public class BuildMonitorView extends ListView {
     public String currentOrder() {
         return currentConfig().getOrder().getClass().getSimpleName();
     }
-    
+
     @SuppressWarnings("unused") // used in the configure-entries.jelly form
     public String currentbuildFailureAnalyzerDisplayedField() {
         return currentConfig().getBuildFailureAnalyzerDisplayedField().getValue();
@@ -152,7 +166,7 @@ public class BuildMonitorView extends ListView {
     public boolean collectAnonymousUsageStatistics() {
         return descriptor.getPermissionToCollectAnonymousUsageStatistics();
     }
-    
+
     @Override
     protected void initColumns() {
     }
@@ -167,9 +181,9 @@ public class BuildMonitorView extends ListView {
 
             String requestedOrdering = req.getParameter("order");
             String displayBadgesFrom = req.getParameter("displayBadgesFrom");
-            title                    = req.getParameter("title");
-            String maxColumns        = req.getParameter("maxColumns");
-            String textScale         = req.getParameter("textScale");
+            title = req.getParameter("title");
+            String maxColumns = req.getParameter("maxColumns");
+            String textScale = req.getParameter("textScale");
 
             currentConfig().setColourBlindMode(json.optBoolean("colourBlindMode", false));
             currentConfig().setReduceMotion(json.optBoolean("reduceMotion", false));
@@ -178,7 +192,7 @@ public class BuildMonitorView extends ListView {
             currentConfig().setDisplayCommitters(json.optBoolean("displayCommitters", true));
             currentConfig().setBuildFailureAnalyzerDisplayedField(req.getParameter("buildFailureAnalyzerDisplayedField"));
             currentConfig().setDisplayJUnitProgress(json.optBoolean("displayJUnitProgress", true));
-            
+
             try {
                 currentConfig().setOrder(orderIn(requestedOrdering));
             } catch (Exception e) {
@@ -218,14 +232,14 @@ public class BuildMonitorView extends ListView {
 
     // --
     private boolean isGiven(String value) {
-        return ! (value == null || "".equals(value));
+        return !(value == null || "".equals(value));
     }
 
     private List<JobView> jobViews() {
         JobViews views = new JobViews(new StaticJenkinsAPIs(), currentConfig());
 
         //A little bit of evil to make the type system happy.
-        @SuppressWarnings({ "unchecked", "rawtypes" })
+        @SuppressWarnings({"unchecked", "rawtypes"})
         List<Job<?, ?>> projects = new ArrayList(Util.filter(super.getItems(), Job.class));
         List<JobView> jobs = new ArrayList<>();
 
@@ -250,13 +264,12 @@ public class BuildMonitorView extends ListView {
      * ends up in an inconsistent state.
      *
      * @return the previously persisted version of the config object, default config, or the
-     *     deprecated "order" object, converted to a "config" object.
+     * deprecated "order" object, converted to a "config" object.
      */
     private Config currentConfig() {
         if (creatingAFreshView()) {
             config = Config.defaultConfig();
-        }
-        else if (deserailisingFromAnOlderFormat()) {
+        } else if (deserailisingFromAnOlderFormat()) {
             migrateFromOldToNewConfigFormat();
         }
 
