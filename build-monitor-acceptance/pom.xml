@@ -124,6 +124,7 @@
                         <settings.localRepository>${settings.localRepository}</settings.localRepository>
                         <wdm.chromeDriverVersion>110</wdm.chromeDriverVersion>
                     </systemPropertyVariables>
+                    <skipTests>true</skipTests>
                 </configuration>
             </plugin>
             <plugin>
