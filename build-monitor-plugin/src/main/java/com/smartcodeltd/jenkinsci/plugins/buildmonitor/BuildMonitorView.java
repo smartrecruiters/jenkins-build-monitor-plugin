@@ -266,7 +266,7 @@ public class BuildMonitorView extends ListView {
      * ends up in an inconsistent state.
      *
      * @return the previously persisted version of the config object, default config, or the
-     * deprecated "order" object, converted to a "config" object.
+     *     deprecated "order" object, converted to a "config" object.
      */
     private Config currentConfig() {
         if (creatingAFreshView()) {
