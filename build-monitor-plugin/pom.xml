@@ -38,17 +38,17 @@
     <build.number>DEV</build.number>
   </properties>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>io.jenkins.tools.bom</groupId>
-                <artifactId>bom-2.361.x</artifactId>
-                <version>2025.v816d28f1e04f</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>io.jenkins.tools.bom</groupId>
+        <artifactId>bom-2.361.x</artifactId>
+        <version>2025.v816d28f1e04f</version>
+        <scope>import</scope>
+        <type>pom</type>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <dependencies>
     <dependency>
@@ -170,15 +170,15 @@
 
   <repositories>
     <repository>
-        <id>custom-jenkins-plugins</id>
-        <url>https://nexus.srinternal.net/nexus/repository/public</url>
+      <id>custom-jenkins-plugins</id>
+      <url>https://nexus.srinternal.net/nexus/repository/public</url>
     </repository>
   </repositories>
 
   <pluginRepositories>
     <pluginRepository>
-        <id>custom-jenkins-plugins</id>
-        <url>https://nexus.srinternal.net/nexus/repository/public</url>
+      <id>custom-jenkins-plugins</id>
+      <url>https://nexus.srinternal.net/nexus/repository/public</url>
     </pluginRepository>
   </pluginRepositories>
 
