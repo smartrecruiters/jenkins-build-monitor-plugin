@@ -32,7 +32,7 @@
     <changelist>999999-SNAPSHOT</changelist>
     <jenkins.version>2.361.4</jenkins.version>
     <gitHubRepo>jenkinsci/build-monitor-plugin</gitHubRepo>
-    <spotless.check.skip>true</spotless.check.skip>
+    <spotless.check.skip>false</spotless.check.skip>
   </properties>
 
   <repositories>
