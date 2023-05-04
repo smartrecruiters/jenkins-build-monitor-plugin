@@ -139,8 +139,8 @@
             <project.root>../</project.root>
             <settings.localRepository>${settings.localRepository}</settings.localRepository>
           </systemPropertyVariables>
-                    <skipTests>true</skipTests>
-                </configuration>
+          <skipTests>true</skipTests>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>net.serenity-bdd.maven.plugins</groupId>
