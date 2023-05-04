@@ -48,4 +48,8 @@
       <url>https://nexus.srinternal.net/nexus/repository/public</url>
     </pluginRepository>
   </pluginRepositories>
+
+  <build>
+    <finalName>${artifactId}-${version}</finalName>
+  </build>
 </project>
