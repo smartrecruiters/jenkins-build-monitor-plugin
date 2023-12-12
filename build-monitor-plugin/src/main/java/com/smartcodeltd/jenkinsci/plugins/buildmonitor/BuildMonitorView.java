@@ -27,6 +27,7 @@ import com.smartcodeltd.jenkinsci.plugins.buildmonitor.api.Respond;
 import com.smartcodeltd.jenkinsci.plugins.buildmonitor.build.GetBuildViewModel;
 import com.smartcodeltd.jenkinsci.plugins.buildmonitor.facade.StaticJenkinsAPIs;
 import com.smartcodeltd.jenkinsci.plugins.buildmonitor.installation.BuildMonitorInstallation;
+import com.smartcodeltd.jenkinsci.plugins.buildmonitor.order.BaseOrder;
 import com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.JobView;
 import com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.JobViews;
 import hudson.Extension;
@@ -46,6 +47,7 @@ import javax.servlet.ServletException;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 
@@ -106,7 +108,7 @@ public class BuildMonitorView extends ListView {
 
     @SuppressWarnings("unused") // used in the configure-entries.jelly form
     public boolean isDisplayCommitters() {
-        return currentConfig().shouldDisplayCommitters();
+        return currentConfig().getDisplayCommitters();
     }
 
     // used in the configure-entries.jelly and main-settings.jelly forms
@@ -124,19 +126,19 @@ public class BuildMonitorView extends ListView {
     // used in the configure-entries.jelly and main-settings.jelly forms
     @SuppressWarnings("unused")
     public boolean isColourBlindMode() {
-        return currentConfig().colourBlindMode();
+        return currentConfig().getColourBlindMode();
     }
 
     // used in the configure-entries.jelly and main-settings.jelly forms
     @SuppressWarnings("unused")
     public boolean isReduceMotion() {
-        return currentConfig().reduceMotion();
+        return currentConfig().getReduceMotion();
     }
 
     // used in the configure-entries.jelly and main-settings.jelly forms
     @SuppressWarnings("unused")
     public boolean isShowBadges() {
-        return currentConfig().showBadges();
+        return currentConfig().getShowBadges();
     }
 
     @SuppressWarnings("unused") // used in the configure-entries.jelly form
@@ -151,7 +153,7 @@ public class BuildMonitorView extends ListView {
 
     @SuppressWarnings("unused") // used in the configure-entries.jelly form
     public boolean isDisplayJUnitProgress() {
-        return currentConfig().shouldDisplayJUnitProgress();
+        return currentConfig().getDisplayJUnitProgress();
     }
 
     private static final BuildMonitorInstallation installation = new BuildMonitorInstallation();
@@ -168,6 +170,15 @@ public class BuildMonitorView extends ListView {
 
     @Override
     protected void initColumns() {}
+
+    @DataBoundSetter
+    public void setConfig(Config config) {
+        this.config = config;
+    }
+
+    public Config getConfig() {
+        return currentConfig();
+    }
 
     @Override
     protected void submit(StaplerRequest req) throws ServletException, IOException, FormException {
@@ -289,17 +300,18 @@ public class BuildMonitorView extends ListView {
     // If an older version of config.xml is loaded, "config" field is missing, but "order" is present
     private void migrateFromOldToNewConfigFormat() {
         Config c = new Config();
-        c.setOrder(order);
+
+        c.setOrder((BaseOrder) order);
 
         config = c;
         order = null;
     }
 
     @SuppressWarnings("unchecked")
-    private Comparator<Job<?, ?>> orderIn(String requestedOrdering) throws ReflectiveOperationException {
+    private BaseOrder orderIn(String requestedOrdering) throws ReflectiveOperationException {
         String packageName = this.getClass().getPackage().getName() + ".order.";
 
-        return (Comparator<Job<?, ?>>) Class.forName(packageName + requestedOrdering)
+        return (BaseOrder) Class.forName(packageName + requestedOrdering)
                 .getDeclaredConstructor()
                 .newInstance();
     }

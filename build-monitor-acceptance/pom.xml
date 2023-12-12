@@ -12,9 +12,9 @@
   <name>Build Monitor Acceptance Tests</name>
 
   <properties>
-    <byte-buddy.version>1.14.4</byte-buddy.version>
-    <serenity.version>3.7.1</serenity.version>
-    <slf4j.version>2.0.7</slf4j.version>
+    <byte-buddy.version>1.14.10</byte-buddy.version>
+    <serenity.version>4.0.28</serenity.version>
+    <slf4j.version>2.0.9</slf4j.version>
   </properties>
 
   <dependencyManagement>
@@ -22,7 +22,7 @@
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-bom</artifactId>
-        <version>11.0.15</version>
+        <version>11.0.18</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -32,14 +32,34 @@
         <version>2.10.1</version>
       </dependency>
       <dependency>
+        <groupId>com.google.errorprone</groupId>
+        <artifactId>error_prone_annotations</artifactId>
+        <version>2.23.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>32.1.3-jre</version>
+      </dependency>
+      <dependency>
         <groupId>com.google.inject</groupId>
         <artifactId>guice</artifactId>
-        <version>5.1.0</version>
+        <version>6.0.0</version>
       </dependency>
       <dependency>
         <groupId>com.thoughtworks.xstream</groupId>
         <artifactId>xstream</artifactId>
         <version>1.4.20</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-codec</groupId>
+        <artifactId>commons-codec</artifactId>
+        <version>1.16.0</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>2.15.1</version>
       </dependency>
       <dependency>
         <groupId>net.bytebuddy</groupId>
@@ -52,6 +72,11 @@
         <version>${byte-buddy.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-compress</artifactId>
+        <version>1.25.0</version>
+      </dependency>
+      <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
         <version>4.5.14</version>
@@ -60,6 +85,11 @@
         <groupId>org.objenesis</groupId>
         <artifactId>objenesis</artifactId>
         <version>3.3</version>
+      </dependency>
+      <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <version>1.18.30</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
@@ -84,6 +114,10 @@
       <artifactId>serenity-core</artifactId>
       <version>${serenity.version}</version>
       <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
         <exclusion>
           <groupId>org.jetbrains</groupId>
           <artifactId>annotations</artifactId>
@@ -138,25 +172,25 @@
             <jenkins.version>${jenkins.version}</jenkins.version>
             <project.root>../</project.root>
             <settings.localRepository>${settings.localRepository}</settings.localRepository>
+            <wdm.chromeDriverVersion>112.0.5615.49</wdm.chromeDriverVersion>
           </systemPropertyVariables>
           <skipTests>true</skipTests>
         </configuration>
       </plugin>
       <plugin>
-        <groupId>net.serenity-bdd.maven.plugins</groupId>
-        <artifactId>serenity-maven-plugin</artifactId>
-        <version>${serenity.version}</version>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
         <executions>
           <execution>
-            <id>serenity-reports</id>
-            <goals>
-              <goal>aggregate</goal>
-            </goals>
-            <phase>post-integration-test</phase>
+            <id>display-info</id>
             <configuration>
-              <generateOutcomes>true</generateOutcomes>
-              <outputDirectory>target/site/serenity</outputDirectory>
-              <sourceDirectory>target/site/serenity</sourceDirectory>
+              <rules>
+                <requireUpperBoundDeps>
+                  <excludes combine.children="append">
+                    <exclude>org.htmlunit:htmlunit</exclude>
+                  </excludes>
+                </requireUpperBoundDeps>
+              </rules>
             </configuration>
           </execution>
         </executions>

@@ -42,8 +42,8 @@
     <dependencies>
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
-        <artifactId>bom-2.361.x</artifactId>
-        <version>2025.v816d28f1e04f</version>
+        <artifactId>bom-2.401.x</artifactId>
+        <version>2612.v3d6a_2128c0ef</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -54,7 +54,7 @@
     <dependency>
       <groupId>com.sonyericsson.jenkins.plugins.bfa</groupId>
       <artifactId>build-failure-analyzer</artifactId>
-      <version>2.4.1</version>
+      <version>2.4.2</version>
       <optional>true</optional>
     </dependency>
     <dependency>
@@ -90,7 +90,7 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>junit-realtime-test-reporter</artifactId>
-      <version>90.v7dc2c937f9a_8</version>
+      <version>135.vf92a_7fe68b_15</version>
       <optional>true</optional>
     </dependency>
     <dependency>
@@ -101,7 +101,7 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>view-job-filters</artifactId>
-      <version>2.3</version>
+      <version>369.ve0513a_a_f5524</version>
       <optional>true</optional>
     </dependency>
     <dependency>
@@ -138,7 +138,7 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>external-monitor-job</artifactId>
-      <version>203.v683c09d993b_9</version>
+      <version>215.v2e88e894db_f8</version>
       <scope>test</scope>
     </dependency>
     <dependency>
