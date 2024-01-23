@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>4.76</version>
+    <version>4.77</version>
     <relativePath />
   </parent>
 
@@ -29,7 +29,7 @@
 
   <properties>
     <revision>1.14</revision>
-    <changelist>745.ve2023a_305f40-SmartRecruiters</changelist>
+    <changelist>826.vb_a_c11536174d-SmartRecruiters</changelist>
     <jenkins.version>2.406</jenkins.version>
     <gitHubRepo>jenkinsci/build-monitor-plugin</gitHubRepo>
     <spotless.check.skip>false</spotless.check.skip>
