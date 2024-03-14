@@ -19,17 +19,17 @@
     "url": "https://github.com/jenkinsci/build-monitor-plugin/issues"
   },
   "devDependencies": {
-    "css-loader": "6.9.1",
+    "css-loader": "6.10.0",
     "jasmine-core": "2.99.1",
-    "karma": "6.4.2",
+    "karma": "6.4.3",
     "karma-coverage": "2.2.1",
     "karma-jasmine": "1.1.2",
     "karma-junit-reporter": "2.0.1",
     "karma-phantomjs-launcher": "1.0.4",
-    "less-loader": "12.1.0",
-    "mini-css-extract-plugin": "2.7.7",
+    "less-loader": "12.2.0",
+    "mini-css-extract-plugin": "2.8.1",
     "style-loader": "3.3.4",
-    "webpack": "5.89.0",
+    "webpack": "5.90.3",
     "webpack-cli": "5.1.4",
     "webpack-merge": "5.10.0"
   },
