@@ -29,7 +29,7 @@
 
   <properties>
     <revision>1.14</revision>
-    <changelist>860.vd06ef2568b_3f-SmartRecruiters</changelist>
+    <changelist>876.v2162064db_a_93-SmartRecruiters</changelist>
     <jenkins.version>2.414.3</jenkins.version>
     <gitHubRepo>jenkinsci/build-monitor-plugin</gitHubRepo>
     <spotless.check.skip>false</spotless.check.skip>
