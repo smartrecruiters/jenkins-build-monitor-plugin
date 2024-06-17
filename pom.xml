@@ -27,16 +27,9 @@
     <url>https://github.com/${gitHubRepo}</url>
   </scm>
 
-  <distributionManagement>
-    <repository>
-      <id>repo.jenkins-ci.org</id>
-      <url>https://repo.jenkins-ci.org/releases</url>
-    </repository>
-  </distributionManagement>
-
   <properties>
     <revision>1.14</revision>
-    <changelist>999999-SNAPSHOT</changelist>
+    <changelist>883.vf620a_44eb_ec1-SmartRecruiters</changelist>
     <jenkins.version>2.414.3</jenkins.version>
     <gitHubRepo>jenkinsci/build-monitor-plugin</gitHubRepo>
     <spotless.check.skip>false</spotless.check.skip>
@@ -44,15 +37,19 @@
 
   <repositories>
     <repository>
-      <id>repo.jenkins-ci.org</id>
-      <url>https://repo.jenkins-ci.org/public/</url>
+      <id>custom-jenkins-plugins</id>
+      <url>https://nexus.srinternal.net/nexus/repository/public</url>
     </repository>
   </repositories>
 
   <pluginRepositories>
     <pluginRepository>
-      <id>repo.jenkins-ci.org</id>
-      <url>https://repo.jenkins-ci.org/public/</url>
+      <id>custom-jenkins-plugins</id>
+      <url>https://nexus.srinternal.net/nexus/repository/public</url>
     </pluginRepository>
   </pluginRepositories>
+
+  <build>
+    <finalName>${artifactId}-${version}</finalName>
+  </build>
 </project>
