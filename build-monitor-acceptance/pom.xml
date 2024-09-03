@@ -12,9 +12,9 @@
   <name>Build Monitor Acceptance Tests</name>
 
   <properties>
-    <byte-buddy.version>1.14.16</byte-buddy.version>
-    <serenity.version>4.1.4</serenity.version>
-    <slf4j.version>2.0.12</slf4j.version>
+    <byte-buddy.version>1.15.0</byte-buddy.version>
+    <serenity.version>4.2.0</serenity.version>
+    <slf4j.version>2.0.16</slf4j.version>
   </properties>
 
   <dependencyManagement>
@@ -22,24 +22,24 @@
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-bom</artifactId>
-        <version>11.0.20</version>
+        <version>10.0.23</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
-        <version>2.10.1</version>
+        <version>2.11.0</version>
       </dependency>
       <dependency>
         <groupId>com.google.errorprone</groupId>
         <artifactId>error_prone_annotations</artifactId>
-        <version>2.26.1</version>
+        <version>2.30.0</version>
       </dependency>
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>33.2.0-jre</version>
+        <version>33.3.0-jre</version>
       </dependency>
       <dependency>
         <groupId>com.google.inject</groupId>
@@ -54,7 +54,7 @@
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
-        <version>1.16.1</version>
+        <version>1.17.1</version>
       </dependency>
       <dependency>
         <groupId>commons-io</groupId>
@@ -74,7 +74,17 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-compress</artifactId>
-        <version>1.26.1</version>
+        <version>1.27.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>3.16.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-text</artifactId>
+        <version>1.12.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
@@ -84,12 +94,12 @@
       <dependency>
         <groupId>org.objenesis</groupId>
         <artifactId>objenesis</artifactId>
-        <version>3.3</version>
+        <version>3.4</version>
       </dependency>
       <dependency>
         <groupId>org.projectlombok</groupId>
         <artifactId>lombok</artifactId>
-        <version>1.18.32</version>
+        <version>1.18.34</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
@@ -185,6 +195,11 @@
             <id>display-info</id>
             <configuration>
               <rules>
+                <enforceBytecodeVersion>
+                  <excludes combine.children="append">
+                    <exclude>org.freemarker:freemarker</exclude>
+                  </excludes>
+                </enforceBytecodeVersion>
                 <requireUpperBoundDeps>
                   <excludes combine.children="append">
                     <exclude>org.htmlunit:htmlunit</exclude>

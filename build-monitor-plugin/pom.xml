@@ -32,8 +32,8 @@
   </developers>
 
   <properties>
-    <node.version>18.14.2</node.version>
-    <npm.version>9.5.0</npm.version>
+    <node.version>20.17.0</node.version>
+    <npm.version>10.8.2</npm.version>
     <selenium.version>2.43.0</selenium.version>
     <build.number>DEV</build.number>
   </properties>
@@ -54,7 +54,7 @@
     <dependency>
       <groupId>com.sonyericsson.jenkins.plugins.bfa</groupId>
       <artifactId>build-failure-analyzer</artifactId>
-      <version>2.5.0</version>
+      <version>2.5.2</version>
       <optional>true</optional>
     </dependency>
     <dependency>
@@ -90,7 +90,7 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>junit-realtime-test-reporter</artifactId>
-      <version>146.v82b_01a_5d2b_3a_</version>
+      <version>149.v05a_d403e2f48</version>
       <optional>true</optional>
     </dependency>
     <dependency>
