@@ -31,13 +31,6 @@
     </developer>
   </developers>
 
-  <distributionManagement>
-    <repository>
-      <id>maven.jenkins-ci.org</id>
-      <url>https://repo.jenkins-ci.org/releases/</url>
-    </repository>
-  </distributionManagement>
-
   <properties>
     <node.version>20.17.0</node.version>
     <npm.version>10.8.2</npm.version>
@@ -172,15 +165,15 @@
 
   <repositories>
     <repository>
-      <id>repo.jenkins-ci.org</id>
-      <url>https://repo.jenkins-ci.org/public/</url>
+      <id>custom-jenkins-plugins</id>
+      <url>https://nexus.srinternal.net/nexus/repository/public</url>
     </repository>
   </repositories>
 
   <pluginRepositories>
     <pluginRepository>
-      <id>repo.jenkins-ci.org</id>
-      <url>https://repo.jenkins-ci.org/public/</url>
+      <id>custom-jenkins-plugins</id>
+      <url>https://nexus.srinternal.net/nexus/repository/public</url>
     </pluginRepository>
   </pluginRepositories>
 
