@@ -29,7 +29,7 @@
 
   <properties>
     <revision>1.14</revision>
-    <changelist>999999-SNAPSHOT-SmartRecruiters</changelist>
+    <changelist>925.v95b_9089a_4c7f-SmartRecruiters</changelist>
     <!-- https://www.jenkins.io/doc/developer/plugin-development/choosing-jenkins-baseline/ -->
     <jenkins.baseline>2.452</jenkins.baseline>
     <jenkins.version>${jenkins.baseline}.4</jenkins.version>
