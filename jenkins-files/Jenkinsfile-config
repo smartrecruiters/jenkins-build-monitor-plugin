@@ -1,5 +1,0 @@
-[
-        artifactType : 'lib',
-        publishDocker: 'jdk17-ubu22',
-        libNotificationChannel: 'dnd_ghflow'
-]
