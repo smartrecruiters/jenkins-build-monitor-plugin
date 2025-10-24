@@ -1,8 +1,0 @@
-@Library('global-core-lib') _
-
-mvnReleaser (
-    repositoryUrl: 'git@github.com:smartrecruiters/jenkins-build-monitor-plugin.git',
-    artifactRepository: 'jenkins-plugins',
-    packageType: 'hpi',
-    artifactPath: 'build-monitor-plugin/'
-)
