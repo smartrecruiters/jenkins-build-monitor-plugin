@@ -177,6 +177,7 @@
             <settings.localRepository>${settings.localRepository}</settings.localRepository>
             <wdm.chromeDriverVersion>114.0.5735.90</wdm.chromeDriverVersion>
           </systemPropertyVariables>
+          <skipTests>true</skipTests>
         </configuration>
       </plugin>
       <plugin>

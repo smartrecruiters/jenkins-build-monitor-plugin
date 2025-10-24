@@ -33,9 +33,12 @@ import com.smartcodeltd.jenkinsci.plugins.buildmonitor.viewmodel.JobViews;
 import hudson.Extension;
 import hudson.Util;
 import hudson.model.Descriptor.FormException;
+import hudson.model.ItemGroup;
 import hudson.model.Job;
 import hudson.model.ListView;
+import hudson.model.TopLevelItem;
 import hudson.model.View;
+import hudson.model.ViewGroup;
 import jakarta.servlet.ServletException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -66,6 +69,16 @@ public class BuildMonitorView extends ListView {
         super(name);
 
         this.title = title;
+    }
+
+    @Override
+    public ViewGroup getOwner() {
+        return Jenkins.getInstance();
+    }
+
+    @Override
+    public ItemGroup<? extends TopLevelItem> getOwnerItemGroup() {
+        return Jenkins.getInstance();
     }
 
     @SuppressWarnings("unused") // used in .jelly
