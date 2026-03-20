@@ -49,7 +49,7 @@
 
   <properties>
     <revision>1.14</revision>
-    <changelist>999999-SNAPSHOT</changelist>
+    <changelist>1028.v37ec12b_6643b_-SmartRecruiters</changelist>
     <!-- https://www.jenkins.io/doc/developer/plugin-development/choosing-jenkins-baseline/ -->
     <jenkins.baseline>2.516</jenkins.baseline>
     <jenkins.version>${jenkins.baseline}.3</jenkins.version>
