@@ -1,0 +1,50 @@
+{
+  "name": "build-monitor-plugin",
+  "version": "1.0.0",
+  "description": "Build Monitor",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "mvnbuild": "npm run build",
+    "mvntest": "npm run test",
+    "build": "vite build --mode production",
+    "build:dev": "vite build --mode production --watch",
+    "lint:fix": "prettier --write src/main/frontend/ && eslint --fix src/main/frontend/",
+    "test": "vitest run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:jenkinsci/build-monitor-plugin.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jenkinsci/build-monitor-plugin/issues"
+  },
+  "dependencies": {
+    "@tippyjs/react": "4.2.6",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "6.9.1",
+    "@testing-library/react": "16.3.2",
+    "@types/node": "24.12.0",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.0.0",
+    "eslint": "9.39.4",
+    "eslint-formatter-checkstyle": "9.0.1",
+    "eslint-plugin-simple-import-sort": "12.1.1",
+    "jsdom": "29.0.0",
+    "neostandard": "0.13.0",
+    "prettier": "3.8.1",
+    "sass-embedded": "1.98.0",
+    "typescript": "5.9.3",
+    "vite": "8.0.0",
+    "vite-plugin-css-injected-by-js": "4.0.1",
+    "vitest": "4.1.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
