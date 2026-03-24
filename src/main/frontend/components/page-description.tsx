@@ -14,7 +14,10 @@ const PageDescription = ({ description }: { description?: string }) => {
   const descriptionPortal = breadcrumbs[breadcrumbs.length - 1];
 
   return createPortal(
-    <p className="bm-description">{description}</p>,
+    <p
+      className="bm-description"
+      dangerouslySetInnerHTML={{ __html: description }}
+    />,
     descriptionPortal,
   );
 };
