@@ -17,6 +17,7 @@
   // Fill the height of the parent container
   flex: 1 1 auto;
   max-height: 100vh;
+  overflow-y: auto;
 
   @media screen and (prefers-reduced-motion: no-preference) {
     & > * {
